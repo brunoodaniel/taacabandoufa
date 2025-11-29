@@ -76,14 +76,16 @@
             <option value="pe">Ponto de Equilíbrio</option>
             <option value="lucratividade">Lucratividade</option>
             <option value="rentabilidade">Rentabilidade</option>
-            <option value="markup">Markup</option>
+            <option value="markupMultiplicador">Markup Multiplicador</option>
         </select>
 
         <div id="camposPE">
             <label for="fixo">Gasto Fixo (R$):</label>
             <input type="number" id="fixo" placeholder="Ex: 10000">
+
             <label for="venda">Preço de Venda (R$):</label>
             <input type="number" id="venda" placeholder="Ex: 50">
+
             <label for="variavel">Gasto Variável (R$):</label>
             <input type="number" id="variavel" placeholder="Ex: 30">
         </div>
@@ -91,6 +93,7 @@
         <div id="camposLucratividade" class="campo-extra">
             <label for="lucroL">Lucro (R$):</label>
             <input type="number" id="lucroL" placeholder="Ex: 2000">
+
             <label for="receita">Receita de Venda (R$):</label>
             <input type="number" id="receita" placeholder="Ex: 10000">
         </div>
@@ -98,15 +101,24 @@
         <div id="camposRentabilidade" class="campo-extra">
             <label for="lucroR">Lucro (R$):</label>
             <input type="number" id="lucroR" placeholder="Ex: 3000">
+
             <label for="capital">Capital Investido (R$):</label>
             <input type="number" id="capital" placeholder="Ex: 15000">
         </div>
 
-        <div id="camposMarkup" class="campo-extra">
-            <label for="custoM">Custo (R$):</label>
-            <input type="number" id="custoM" placeholder="Ex: 30">
-            <label for="vendaM">Preço de Venda (R$):</label>
-            <input type="number" id="vendaM" placeholder="Ex: 50">
+        <div id="camposMarkupMultiplicador" class="campo-extra">
+            <label>Custo Unitário (R$):</label>
+            <input type="number" id="custoMM" placeholder="Ex: 20">
+            <label>Comissões (%):</label>
+            <input type="number" id="comissao" placeholder="Ex: 3">
+            <label>Tributos (%):</label>
+            <input type="number" id="tributos" placeholder="Ex: 22">
+            <label>Custos Fixos (%):</label>
+            <input type="number" id="custosFixos" placeholder="Ex: 13">
+            <label>Despesas Fixas (%):</label>
+            <input type="number" id="despesasFixas" placeholder="Ex: 7">
+            <label>Margem de Lucro (%):</label>
+            <input type="number" id="margemLucro" placeholder="Ex: 15">
         </div>
 
         <button onclick="calcular()">Calcular</button>
@@ -120,13 +132,13 @@
             document.getElementById("camposPE").style.display = tipo === "pe" ? "block" : "none"
             document.getElementById("camposLucratividade").style.display = tipo === "lucratividade" ? "block" : "none"
             document.getElementById("camposRentabilidade").style.display = tipo === "rentabilidade" ? "block" : "none"
-            document.getElementById("camposMarkup").style.display = tipo === "markup" ? "block" : "none"
+            document.getElementById("camposMarkupMultiplicador").style.display = tipo === "markupMultiplicador" ? "block" : "none"
             document.getElementById("resultado").innerText = ""
         }
 
         function calcular() {
             const tipo = document.getElementById("tipoConta").value
-            const resultadoDiv = document.getElementById("resultado")
+            const r = document.getElementById("resultado")
             let resultado = 0
 
             if (tipo === "pe") {
@@ -134,48 +146,67 @@
                 const venda = parseFloat(document.getElementById("venda").value)
                 const variavel = parseFloat(document.getElementById("variavel").value)
                 if (isNaN(fixo) || isNaN(venda) || isNaN(variavel)) {
-                    resultadoDiv.innerText = "Preencha todos os campos"
+                    r.innerText = "Preencha todos os campos."
                     return
                 }
                 if (venda <= variavel) {
-                    resultadoDiv.innerText = "Preço de venda deve ser maior que o gasto variável"
+                    r.innerText = "Preço de venda deve ser maior que o gasto variável."
                     return
                 }
                 resultado = fixo / (venda - variavel)
-                resultadoDiv.innerText = "Ponto de Equilíbrio: " + resultado.toFixed(2) + " unidades"
+                r.innerText = "Ponto de Equilíbrio: " + resultado.toFixed(2) + " unidades"
             }
 
-            if (tipo === "lucratividade") {
+            else if (tipo === "lucratividade") {
                 const lucro = parseFloat(document.getElementById("lucroL").value)
                 const receita = parseFloat(document.getElementById("receita").value)
                 if (isNaN(lucro) || isNaN(receita) || receita === 0) {
-                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+                    r.innerText = "Preencha todos os campos corretamente."
                     return
                 }
                 resultado = lucro / receita * 100
-                resultadoDiv.innerText = "Lucratividade: " + resultado.toFixed(2) + "%"
+                r.innerText = "Lucratividade: " + resultado.toFixed(2) + "%"
             }
 
-            if (tipo === "rentabilidade") {
+            else if (tipo === "rentabilidade") {
                 const lucro = parseFloat(document.getElementById("lucroR").value)
                 const capital = parseFloat(document.getElementById("capital").value)
                 if (isNaN(lucro) || isNaN(capital) || capital === 0) {
-                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+                    r.innerText = "Preencha todos os campos corretamente."
                     return
                 }
                 resultado = lucro / capital * 100
-                resultadoDiv.innerText = "Rentabilidade: " + resultado.toFixed(2) + "%"
+                r.innerText = "Rentabilidade: " + resultado.toFixed(2) + "%"
             }
 
-            if (tipo === "markup") {
-                const custo = parseFloat(document.getElementById("custoM").value)
-                const venda = parseFloat(document.getElementById("vendaM").value)
-                if (isNaN(custo) || isNaN(venda) || custo === 0) {
-                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+            else if (tipo === "markupMultiplicador") {
+                const custo = parseFloat(document.getElementById("custoMM").value)
+                const comissao = parseFloat(document.getElementById("comissao").value)
+                const tributos = parseFloat(document.getElementById("tributos").value)
+                const custosFixos = parseFloat(document.getElementById("custosFixos").value)
+                const despesasFixas = parseFloat(document.getElementById("despesasFixas").value)
+                const margemLucro = parseFloat(document.getElementById("margemLucro").value)
+
+                if (
+                    isNaN(custo) || isNaN(comissao) || isNaN(tributos) ||
+                    isNaN(custosFixos) || isNaN(despesasFixas) || isNaN(margemLucro)
+                ) {
+                    r.innerText = "Preencha todos os campos."
                     return
                 }
-                resultado = (venda - custo) / custo * 100
-                resultadoDiv.innerText = "Markup: " + resultado.toFixed(2) + "%"
+
+                const soma = comissao + tributos + custosFixos + despesasFixas + margemLucro
+                const divisor = 100 - soma
+
+                if (divisor <= 0) {
+                    r.innerText = "A soma dos percentuais deve ser menor que 100."
+                    return
+                }
+
+                const markup = 100 / divisor
+                const precoVenda = custo * markup
+
+                r.innerText = "Markup: " + markup.toFixed(2) + " | Preço de Venda: R$ " + precoVenda.toFixed(2)
             }
         }
     </script>
