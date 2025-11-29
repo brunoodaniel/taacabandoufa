@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Financeira Empresarial</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #0078d7, #00bfa6);
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0
+    }
+    .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        width: 340px;
+        text-align: center
+    }
+    h2 {
+        margin-bottom: 20px;
+        color: #0078d7
+    }
+    label {
+        display: block;
+        margin: 10px 0 5px;
+        text-align: left;
+        font-weight: bold
+    }
+    input, select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        margin-bottom: 10px
+    }
+    button {
+        margin-top: 15px;
+        padding: 10px 15px;
+        width: 100%;
+        background-color: #0078d7;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s
+    }
+    button:hover {
+        background-color: #005fa3
+    }
+    .resultado {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #0078d7;
+        font-weight: bold
+    }
+    .campo-extra {
+        display: none
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Calculadora Financeira</h2>
+
+        <label for="tipoConta">Escolha o tipo de cálculo:</label>
+        <select id="tipoConta" onchange="mostrarCampos()">
+            <option value="pe">Ponto de Equilíbrio</option>
+            <option value="lucratividade">Lucratividade</option>
+            <option value="rentabilidade">Rentabilidade</option>
+            <option value="markup">Markup</option>
+        </select>
+
+        <div id="camposPE">
+            <label for="fixo">Gasto Fixo (R$):</label>
+            <input type="number" id="fixo" placeholder="Ex: 10000">
+            <label for="venda">Preço de Venda (R$):</label>
+            <input type="number" id="venda" placeholder="Ex: 50">
+            <label for="variavel">Gasto Variável (R$):</label>
+            <input type="number" id="variavel" placeholder="Ex: 30">
+        </div>
+
+        <div id="camposLucratividade" class="campo-extra">
+            <label for="lucroL">Lucro (R$):</label>
+            <input type="number" id="lucroL" placeholder="Ex: 2000">
+            <label for="receita">Receita de Venda (R$):</label>
+            <input type="number" id="receita" placeholder="Ex: 10000">
+        </div>
+
+        <div id="camposRentabilidade" class="campo-extra">
+            <label for="lucroR">Lucro (R$):</label>
+            <input type="number" id="lucroR" placeholder="Ex: 3000">
+            <label for="capital">Capital Investido (R$):</label>
+            <input type="number" id="capital" placeholder="Ex: 15000">
+        </div>
+
+        <div id="camposMarkup" class="campo-extra">
+            <label for="custoM">Custo (R$):</label>
+            <input type="number" id="custoM" placeholder="Ex: 30">
+            <label for="vendaM">Preço de Venda (R$):</label>
+            <input type="number" id="vendaM" placeholder="Ex: 50">
+        </div>
+
+        <button onclick="calcular()">Calcular</button>
+
+        <div class="resultado" id="resultado"></div>
+    </div>
+
+    <script>
+        function mostrarCampos() {
+            const tipo = document.getElementById("tipoConta").value
+            document.getElementById("camposPE").style.display = tipo === "pe" ? "block" : "none"
+            document.getElementById("camposLucratividade").style.display = tipo === "lucratividade" ? "block" : "none"
+            document.getElementById("camposRentabilidade").style.display = tipo === "rentabilidade" ? "block" : "none"
+            document.getElementById("camposMarkup").style.display = tipo === "markup" ? "block" : "none"
+            document.getElementById("resultado").innerText = ""
+        }
+
+        function calcular() {
+            const tipo = document.getElementById("tipoConta").value
+            const resultadoDiv = document.getElementById("resultado")
+            let resultado = 0
+
+            if (tipo === "pe") {
+                const fixo = parseFloat(document.getElementById("fixo").value)
+                const venda = parseFloat(document.getElementById("venda").value)
+                const variavel = parseFloat(document.getElementById("variavel").value)
+                if (isNaN(fixo) || isNaN(venda) || isNaN(variavel)) {
+                    resultadoDiv.innerText = "Preencha todos os campos"
+                    return
+                }
+                if (venda <= variavel) {
+                    resultadoDiv.innerText = "Preço de venda deve ser maior que o gasto variável"
+                    return
+                }
+                resultado = fixo / (venda - variavel)
+                resultadoDiv.innerText = "Ponto de Equilíbrio: " + resultado.toFixed(2) + " unidades"
+            }
+
+            if (tipo === "lucratividade") {
+                const lucro = parseFloat(document.getElementById("lucroL").value)
+                const receita = parseFloat(document.getElementById("receita").value)
+                if (isNaN(lucro) || isNaN(receita) || receita === 0) {
+                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+                    return
+                }
+                resultado = lucro / receita * 100
+                resultadoDiv.innerText = "Lucratividade: " + resultado.toFixed(2) + "%"
+            }
+
+            if (tipo === "rentabilidade") {
+                const lucro = parseFloat(document.getElementById("lucroR").value)
+                const capital = parseFloat(document.getElementById("capital").value)
+                if (isNaN(lucro) || isNaN(capital) || capital === 0) {
+                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+                    return
+                }
+                resultado = lucro / capital * 100
+                resultadoDiv.innerText = "Rentabilidade: " + resultado.toFixed(2) + "%"
+            }
+
+            if (tipo === "markup") {
+                const custo = parseFloat(document.getElementById("custoM").value)
+                const venda = parseFloat(document.getElementById("vendaM").value)
+                if (isNaN(custo) || isNaN(venda) || custo === 0) {
+                    resultadoDiv.innerText = "Preencha todos os campos corretamente"
+                    return
+                }
+                resultado = (venda - custo) / custo * 100
+                resultadoDiv.innerText = "Markup: " + resultado.toFixed(2) + "%"
+            }
+        }
+    </script>
+</body>
+</html>
